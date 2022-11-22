@@ -11,11 +11,12 @@ import {
   Textarea,
 } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentNodeState,
   refreshLinkListState,
   selectedAnchorsState,
+  refreshState,
 } from '../../../global/Atoms'
 import {
   INode,
@@ -35,7 +36,6 @@ import {
 import { Button } from '../../Button'
 import { TreeView } from '../../TreeView'
 import './GraphModal.scss'
-import { useSetRecoilState } from 'recoil'
 import { selectedNodeState } from '../../../global/Atoms'
 import { NodeLinkMenu } from '../../NodeView/NodeLinkMenu'
 
@@ -73,6 +73,7 @@ export const GraphModal = (props: IGraphModalProps) => {
   const linkMenuRefresh = useRecoilValue(refreshLinkListState)
   const selectedAnchors = useRecoilValue(selectedAnchorsState)
   const currentNode = useRecoilValue(currentNodeState)
+  const [refresh, setRefresh] = useRecoilState(refreshState)
   const [anchorsMap, setAnchorsMap] = useState<{
     [anchorId: string]: {
       anchor: IAnchor
@@ -173,7 +174,7 @@ export const GraphModal = (props: IGraphModalProps) => {
                 flowNodes.push({
                   id,
                   data: { label: node1.title },
-                  position: { x: 40 * j + 40, y: 40 * j },
+                  position: { x: 30 * j + 30, y: 40 * j },
                 })
               }
 
@@ -188,12 +189,13 @@ export const GraphModal = (props: IGraphModalProps) => {
         }
       }
 
-      debugger
+      setRefresh(!refresh)
+
       setNodes(flowNodes)
       setEdges(flowEdges)
     }
     loadFlowNodes()
-  }, [currentNode, linkMenuRefresh, selectedAnchors])
+  }, [currentNode, linkMenuRefresh, selectedAnchors, refreshState])
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
