@@ -17,7 +17,7 @@ import { Alert } from '../Alert'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
 import { Header } from '../Header'
 import { LoadingScreen } from '../LoadingScreen'
-import { CompleteLinkModal, CreateNodeModal, MoveNodeModal } from '../Modals'
+import { CompleteLinkModal, CreateNodeModal, MoveNodeModal, GraphModal } from '../Modals'
 import { NodeView } from '../NodeView'
 import { TreeView } from '../TreeView'
 import './MainView.scss'
@@ -28,6 +28,9 @@ export const MainView = React.memo(function MainView() {
   const [isAppLoaded, setIsAppLoaded] = useState(false)
   // modal states
   const [createNodeModalOpen, setCreateNodeModalOpen] = useState(false)
+  // graph visualization
+  const [graphModalOpen, setGraphModalOpen] = useState(false)
+
   const [completeLinkModalOpen, setCompleteLinkModalOpen] = useState(false)
   const [moveNodeModalOpen, setMoveNodeModalOpen] = useState(false)
   // node states
@@ -100,6 +103,11 @@ export const MainView = React.memo(function MainView() {
   const handleCreateNodeButtonClick = useCallback(() => {
     setCreateNodeModalOpen(true)
   }, [setCreateNodeModalOpen])
+
+  // button click for graph modal
+  const handleGraphButtonClick = useCallback(() => {
+    setGraphModalOpen(true)
+  }, [setGraphModalOpen])
 
   const handleDeleteNodeButtonClick = useCallback(
     async (node: INode) => {
@@ -205,6 +213,13 @@ export const MainView = React.memo(function MainView() {
             nodeIdsToNodesMap={nodeIdsToNodesMap}
             onSubmit={loadRootsFromDB}
           />
+          <GraphModal
+            isOpen={graphModalOpen}
+            onClose={() => setGraphModalOpen(false)}
+            roots={rootNodes}
+            nodeIdsToNodesMap={nodeIdsToNodesMap}
+            onSubmit={loadRootsFromDB}
+          />
           <CompleteLinkModal
             isOpen={completeLinkModalOpen}
             onClose={() => setCompleteLinkModalOpen(false)}
@@ -238,6 +253,7 @@ export const MainView = React.memo(function MainView() {
                 currentNode={selectedNode ? selectedNode : rootRecursiveNodeTree.node}
                 onDeleteButtonClick={handleDeleteNodeButtonClick}
                 onMoveButtonClick={handleMoveNodeButtonClick}
+                onGraphButtonClick={handleGraphButtonClick}
                 onCompleteLinkClick={handleCompleteLinkClick}
                 onCreateNodeButtonClick={handleCreateNodeButtonClick}
                 nodeIdsToNodesMap={nodeIdsToNodesMap}

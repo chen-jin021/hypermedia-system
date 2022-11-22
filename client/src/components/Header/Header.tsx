@@ -6,7 +6,12 @@ import * as ai from 'react-icons/ai'
 import { NodeIdsToNodesMap } from '../../types'
 import { Link } from 'react-router-dom'
 import { useRecoilState, useSetRecoilState } from 'recoil'
-import { isLinkingState, startAnchorState, selectedExtentState } from '../../global/Atoms'
+import {
+  isLinkingState,
+  startAnchorState,
+  selectedExtentState,
+  controlCurrentPlayerState,
+} from '../../global/Atoms'
 import './Header.scss'
 import NodeSelect from '../NodeSelect'
 
@@ -23,7 +28,10 @@ export const Header = (props: IHeaderProps) => {
   const [startAnchor, setStartAnchor] = useRecoilState(startAnchorState)
   const setSelectedExtent = useSetRecoilState(selectedExtentState)
 
+  const [, setPlaying] = useRecoilState(controlCurrentPlayerState)
+
   const handleCancelLink = () => {
+    setPlaying(true)
     setStartAnchor(null)
     setSelectedExtent(null)
     setIsLinking(false)

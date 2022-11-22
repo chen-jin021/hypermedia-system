@@ -25,6 +25,7 @@ import {
   startAnchorState,
   endAnchorState,
   selectedAnchorsState,
+  controlCurrentPlayerState,
 } from '../../../global/Atoms'
 import './CompleteLinkModal.scss'
 
@@ -82,6 +83,8 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
   const setSelectedAnchors = useSetRecoilState(selectedAnchorsState)
   const [refresh, setRefresh] = useRecoilState(refreshState)
 
+  const [, setPlaying] = useRecoilState(controlCurrentPlayerState)
+
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
   }
@@ -98,14 +101,19 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
 
       let anchor1 = await FrontendAnchorGateway.getAnchor(startAnchor.anchorId)
       let anchor2 = await FrontendAnchorGateway.getAnchor(endAnchor.anchorId)
+
       if (!anchor1.success) {
         const payload = { ...startAnchor }
 
         if (startAnchor.nodeId.includes('video')) {
+          const { nodeId } = startAnchor
+
+          const time = localStorage.getItem(`progress_${nodeId}`)
+
           payload.extent = {
             type: 'video',
-            start: Number(box1.range.start),
-            end: Number(box1.range.end),
+            start: Number(time),
+            end: 0,
           }
         }
 
@@ -114,10 +122,13 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
       if (!anchor2.success) {
         const payload = { ...endAnchor }
         if (endAnchor.nodeId.includes('video')) {
+          const { nodeId } = endAnchor
+
+          const time = localStorage.getItem(`progress_${nodeId}`)
           payload.extent = {
             type: 'video',
-            start: Number(box2.range.start),
-            end: Number(box2.range.end),
+            start: Number(time),
+            end: 0,
           }
         }
         anchor2 = await FrontendAnchorGateway.createAnchor(payload)
@@ -180,14 +191,6 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
   const nodeToTitle =
     toNodeId && nodeIdsToNodes[toNodeId] ? nodeIdsToNodes[toNodeId].title : 'node'
 
-  console.log(startAnchor, endAnchor, 'mockkkk')
-
-  const showFirstRange = startAnchor?.nodeId?.includes('video')
-  const showSecondRange = endAnchor?.nodeId?.includes('video')
-
-  const box1 = {} as Record<any, any>
-  const box2 = {} as Record<any, any>
-
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
       <div className="modal-font">
@@ -205,19 +208,6 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
               <Input value={title} onChange={handleTitleChange} placeholder="Title..." />
             </FormControl>
 
-            {showFirstRange && (
-              <FormControl mt={4}>
-                <FormLabel>Range Of Video 1</FormLabel>
-                <Range box={box1} />
-              </FormControl>
-            )}
-            {showSecondRange && (
-              <FormControl mt={4}>
-                <FormLabel>Range Of Video 2</FormLabel>
-                <Range box={box2} />
-              </FormControl>
-            )}
-
             <FormControl mt={4}>
               <FormLabel>Link Explainer</FormLabel>
               <Textarea
@@ -230,7 +220,13 @@ export const CompleteLinkModal = (props: ICompleteLinkModalProps) => {
           <ModalFooter>
             {error.length > 0 && <div className="modal-error">{error}</div>}
             <div className="modal-footer-buttons">
-              <Button text="Create" icon={<BiLinkAlt />} onClick={handleSubmit} />
+              <Button
+                text="Create"
+                icon={<BiLinkAlt />}
+                onClick={async () => {
+                  handleSubmit().finally(() => setPlaying(true))
+                }}
+              />
             </div>
           </ModalFooter>
         </ModalContent>

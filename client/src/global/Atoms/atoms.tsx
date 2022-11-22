@@ -86,3 +86,18 @@ export const alertMessageState = atom<string>({
   key: 'alertMessageState',
   default: '',
 })
+
+export const currentPlayerState = atom<any>({
+  key: 'player',
+  default: {},
+})
+
+export const firstPlayerState = atom<any>({
+  key: 'prevPlayer',
+  default: {},
+})
+
+export const controlCurrentPlayerState = atom<boolean>({
+  key: 'playerState',
+  default: true,
+})

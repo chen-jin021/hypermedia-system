@@ -19,6 +19,8 @@ import {
   alertMessageState,
   currentNodeState,
   refreshLinkListState,
+  currentPlayerState,
+  controlCurrentPlayerState,
 } from '../../global/Atoms'
 import './NodeView.scss'
 
@@ -34,6 +36,8 @@ export interface INodeViewProps {
   onDeleteButtonClick: (node: INode) => void
   // handler for opening move node modal
   onMoveButtonClick: (node: INode) => void
+  // handle graph visualization
+  onGraphButtonClick: (node: INode) => void
   // children used when rendering folder node
   childNodes?: INode[]
 }
@@ -47,6 +51,7 @@ export const NodeView = (props: INodeViewProps) => {
     onCreateNodeButtonClick,
     onDeleteButtonClick,
     onMoveButtonClick,
+    onGraphButtonClick,
     childNodes,
   } = props
   const setIsLinking = useSetRecoilState(isLinkingState)
@@ -61,6 +66,9 @@ export const NodeView = (props: INodeViewProps) => {
   const setAlertIsOpen = useSetRecoilState(alertOpenState)
   const setAlertTitle = useSetRecoilState(alertTitleState)
   const setAlertMessage = useSetRecoilState(alertMessageState)
+
+  const [, setPlaying] = useRecoilState(controlCurrentPlayerState)
+
   // eslint-disable-next-line
   const [currNode, setCurrentNode] = useRecoilState(currentNodeState)
   const {
@@ -81,6 +89,7 @@ export const NodeView = (props: INodeViewProps) => {
   }, [currentNode])
 
   const handleStartLinkClick = () => {
+    setPlaying(false)
     if (selectedExtent === undefined) {
       setAlertIsOpen(true)
       setAlertTitle('Cannot start link from this anchor')
@@ -193,6 +202,7 @@ export const NodeView = (props: INodeViewProps) => {
           onDeleteButtonClick={onDeleteButtonClick}
           onHandleStartLinkClick={handleStartLinkClick}
           onHandleCompleteLinkClick={handleCompleteLinkClick}
+          onGraphButtonClick={onGraphButtonClick}
         />
         <div className="nodeView-scrollable">
           {hasBreadcrumb && (

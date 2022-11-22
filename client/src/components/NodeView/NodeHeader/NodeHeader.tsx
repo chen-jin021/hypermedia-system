@@ -25,6 +25,7 @@ interface INodeHeaderProps {
   onHandleStartLinkClick: () => void
   onDeleteButtonClick: (node: INode) => void
   onMoveButtonClick: (node: INode) => void
+  onGraphButtonClick: (node: INode) => void
 }
 
 export const NodeHeader = (props: INodeHeaderProps) => {
@@ -33,6 +34,7 @@ export const NodeHeader = (props: INodeHeaderProps) => {
     onMoveButtonClick,
     onHandleStartLinkClick,
     onHandleCompleteLinkClick,
+    onGraphButtonClick,
   } = props
   const currentNode = useRecoilValue(currentNodeState)
   const [refresh, setRefresh] = useRecoilState(refreshState)
@@ -183,6 +185,11 @@ export const NodeHeader = (props: INodeHeaderProps) => {
       <div className="nodeHeader-buttonBar">
         {notRoot && (
           <>
+            <Button
+              icon={<ri.RiMenuAddFill />}
+              text="Node Visual"
+              onClick={() => onGraphButtonClick(currentNode)}
+            />
             <Button
               icon={<ri.RiDeleteBin6Line />}
               text="Delete"

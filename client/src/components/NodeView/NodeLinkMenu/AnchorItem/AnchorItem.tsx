@@ -29,6 +29,14 @@ export interface IAnchorItemProps {
   isAnchorSelected: boolean
 }
 
+const formatSeconds = (time_: number) => {
+  const m = parseInt(String(time_ / 60))
+
+  const s = parseInt(String(time_ % 60))
+
+  return `${m}:${s}`
+}
+
 export const AnchorItem = (props: IAnchorItemProps) => {
   const { extent, isAnchorSelected, linkItems, anchorsMap, anchorId } = props
   const currentNode = useRecoilValue(currentNodeState)
@@ -110,9 +118,7 @@ export const AnchorItem = (props: IAnchorItemProps) => {
         )}
 
         {extent?.type == 'video' && (
-          <div className="anchorPreview-text">
-            {extent.start}:{extent.end}
-          </div>
+          <div className="anchorPreview-text">{formatSeconds(extent.start)}</div>
         )}
       </div>
       {linkItems}
